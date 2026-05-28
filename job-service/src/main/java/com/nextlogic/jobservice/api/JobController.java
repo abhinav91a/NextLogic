@@ -1,7 +1,10 @@
 package com.nextlogic.jobservice.api;
 
 import com.nextlogic.jobservice.api.dto.JobResponse;
+import com.nextlogic.jobservice.api.dto.JobSearchRequest;
+import com.nextlogic.jobservice.api.dto.JobSearchResponse;
 import com.nextlogic.jobservice.service.JobService;
+import com.nextlogic.jobservice.service.JobSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +17,7 @@ import java.util.List;
 public class JobController {
 
     private final JobService jobService;
+    private final JobSearchService jobSearchService;   // ⭐ ADD THIS
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -41,5 +45,10 @@ public class JobController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         jobService.delete(id);
+    }
+
+    @PostMapping("/search")
+    public JobSearchResponse search(@RequestBody JobSearchRequest request) {
+        return new JobSearchResponse(jobSearchService.search(request));
     }
 }
