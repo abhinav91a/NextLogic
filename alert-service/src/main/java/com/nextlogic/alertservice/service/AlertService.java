@@ -2,10 +2,12 @@ package com.nextlogic.alertservice.service;
 
 import com.nextlogic.alertservice.api.dto.AlertResponse;
 import com.nextlogic.alertservice.domain.Alert;
+import com.nextlogic.alertservice.kafka.ScrapedJobEvent;
 import com.nextlogic.alertservice.repository.AlertRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -16,13 +18,33 @@ public class AlertService {
 
     private final AlertRepository alertRepository;
 
+    /**
+     * Called internally by AlertMatchingService when a job matches a user's preferences.
+     */
+    public void createAlert(Long userId, ScrapedJobEvent job) {
+        Alert alert = Alert.builder()
+                .userId(userId)
+                .jobTitle(job.getTitle())
+                .jobLocation(job.getLocation())
+                .jobUrl(job.getUrl())
+                .createdAt(Instant.now())
+                .build();
+
+        alertRepository.save(alert);
+    }
+
+    /**
+     * Manual CRUD API support (optional).
+     */
     public AlertResponse create(AlertResponse request) {
         Alert alert = Alert.builder()
-                .companyId(request.getCompanyId())
-                .title(request.getTitle())
-                .location(request.getLocation())
-                .url(request.getUrl())
+                .userId(request.getUserId())
+                .jobTitle(request.getJobTitle())
+                .jobLocation(request.getJobLocation())
+                .jobUrl(request.getJobUrl())
+                .createdAt(Instant.now())
                 .build();
+
         Alert saved = alertRepository.save(alert);
         return toResponse(saved);
     }
@@ -41,9 +63,12 @@ public class AlertService {
 
     public AlertResponse update(Long id, AlertResponse request) {
         Alert alert = alertRepository.findById(id).orElseThrow();
-        alert.setTitle(request.getTitle());
-        alert.setLocation(request.getLocation());
-        alert.setUrl(request.getUrl());
+
+        alert.setJobTitle(request.getJobTitle());
+        alert.setJobLocation(request.getJobLocation());
+        alert.setJobUrl(request.getJobUrl());
+        alert.setCreatedAt(Instant.now());
+
         Alert saved = alertRepository.save(alert);
         return toResponse(saved);
     }
@@ -52,15 +77,19 @@ public class AlertService {
         alertRepository.deleteById(id);
     }
 
-    private AlertResponse toResponse(Alert Alert) {
+    public void deleteAlertsByJobUrl(String jobUrl) {
+        alertRepository.deleteByJobUrl(jobUrl);
+    }
+
+
+    private AlertResponse toResponse(Alert alert) {
         return AlertResponse.builder()
-                .id(Alert.getId())
-                .companyId(Alert.getCompanyId())
-                .title(Alert.getTitle())
-                .location(Alert.getLocation())
-                .url(Alert.getUrl())
-                .createdAt(Alert.getCreatedAt())
-                .updatedAt(Alert.getUpdatedAt())
+                .id(alert.getId())
+                .userId(alert.getUserId())
+                .jobTitle(alert.getJobTitle())
+                .jobLocation(alert.getJobLocation())
+                .jobUrl(alert.getJobUrl())
+                .createdAt(alert.getCreatedAt())
                 .build();
     }
 }

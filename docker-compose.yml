@@ -1,0 +1,233 @@
+version: "3.9"
+
+services:
+
+  # ============================
+  # TRAEFIK (Reverse Proxy + SSL)
+  # ============================
+  traefik:
+    image: traefik:v2.11
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@nextlogic.org.uk"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - nextlogic
+
+  # ============================
+  # KAFKA + ZOOKEEPER
+  # ============================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - nextlogic
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - nextlogic
+
+  # ============================
+  # POSTGRES DATABASES (One per service)
+  # ============================
+  postgres_company:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: companydb
+      POSTGRES_USER: company
+      POSTGRES_PASSWORD: company123
+    volumes:
+      - company_data:/var/lib/postgresql/data
+    networks:
+      - nextlogic
+
+  postgres_job:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: jobdb
+      POSTGRES_USER: job
+      POSTGRES_PASSWORD: job123
+    volumes:
+      - job_data:/var/lib/postgresql/data
+    networks:
+      - nextlogic
+
+  postgres_user:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user123
+    volumes:
+      - user_data:/var/lib/postgresql/data
+    networks:
+      - nextlogic
+
+  postgres_alert:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: alertdb
+      POSTGRES_USER: alert
+      POSTGRES_PASSWORD: alert123
+    volumes:
+      - alert_data:/var/lib/postgresql/data
+    networks:
+      - nextlogic
+
+  postgres_scraper:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: scraperdb
+      POSTGRES_USER: scraper
+      POSTGRES_PASSWORD: scraper123
+    volumes:
+      - scraper_data:/var/lib/postgresql/data
+    networks:
+      - nextlogic
+
+  # ============================
+  # EUREKA SERVER
+  # ============================
+  eureka-server:
+    build: ./eureka-server
+    networks:
+      - nextlogic
+    labels:
+      - "traefik.enable=false"
+
+  # ============================
+  # API GATEWAY (Public Entry Point)
+  # ============================
+  api-gateway:
+    build: ./api-gateway
+    depends_on:
+      - eureka-server
+    networks:
+      - nextlogic
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gateway.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.gateway.entrypoints=websecure"
+      - "traefik.http.routers.gateway.tls.certresolver=letsencrypt"
+
+  # ============================
+  # COMPANY SERVICE
+  # ============================
+  company-service:
+    build: ./company-service
+    depends_on:
+      - postgres_company
+      - kafka
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_company:5432/companydb
+      SPRING_DATASOURCE_USERNAME: company
+      SPRING_DATASOURCE_PASSWORD: company123
+    networks:
+      - nextlogic
+    labels:
+      - "traefik.enable=false"
+
+  # ============================
+  # JOB SERVICE
+  # ============================
+  job-service:
+    build: ./job-service
+    depends_on:
+      - postgres_job
+      - kafka
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_job:5432/jobdb
+      SPRING_DATASOURCE_USERNAME: job
+      SPRING_DATASOURCE_PASSWORD: job123
+    networks:
+      - nextlogic
+    labels:
+      - "traefik.enable=false"
+
+  # ============================
+  # USER SERVICE
+  # ============================
+  user-service:
+    build: ./user-service
+    depends_on:
+      - postgres_user
+      - kafka
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_user:5432/userdb
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: user123
+    networks:
+      - nextlogic
+    labels:
+      - "traefik.enable=false"
+
+  # ============================
+  # ALERT SERVICE
+  # ============================
+  alert-service:
+    build: ./alert-service
+    depends_on:
+      - postgres_alert
+      - kafka
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_alert:5432/alertdb
+      SPRING_DATASOURCE_USERNAME: alert
+      SPRING_DATASOURCE_PASSWORD: alert123
+    networks:
+      - nextlogic
+    labels:
+      - "traefik.enable=false"
+
+  # ============================
+  # SCRAPER SERVICE
+  # ============================
+  scraper-service:
+    build: ./scraper-service
+    depends_on:
+      - postgres_scraper
+      - kafka
+      - eureka-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_scraper:5432/scraperdb
+      SPRING_DATASOURCE_USERNAME: scraper
+      SPRING_DATASOURCE_PASSWORD: scraper123
+    networks:
+      - nextlogic
+    labels:
+      - "traefik.enable=false"
+
+# ============================
+# NETWORKS & VOLUMES
+# ============================
+networks:
+  nextlogic:
+
+volumes:
+  company_data:
+  job_data:
+  user_data:
+  alert_data:
+  scraper_data:

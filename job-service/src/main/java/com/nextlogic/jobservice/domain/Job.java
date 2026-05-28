@@ -20,6 +20,8 @@ public class Job {
     private Long companyId;
     private String title;
     private String location;
+
+    @Column(unique = true)
     private String url;
 
     private Instant createdAt;
@@ -35,5 +37,11 @@ public class Job {
     @PreUpdate
     void preUpdate() {
         updatedAt = Instant.now();
+    }
+
+    @Column(nullable = true)
+    private Instant expiresAt;
+    public boolean isExpired() {
+        return expiresAt != null && expiresAt.isBefore(Instant.now());
     }
 }

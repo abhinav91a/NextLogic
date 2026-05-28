@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "jobs")
+@Table(name = "alerts")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,23 +17,11 @@ public class Alert {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long companyId;
-    private String title;
-    private String location;
-    private String url;
+    private Long userId;
+
+    private String jobTitle;
+    private String jobLocation;
+    private String jobUrl;
 
     private Instant createdAt;
-    private Instant updatedAt;
-
-    @PrePersist
-    void prePersist() {
-        Instant now = Instant.now();
-        createdAt = now;
-        updatedAt = now;
-    }
-
-    @PreUpdate
-    void preUpdate() {
-        updatedAt = Instant.now();
-    }
 }

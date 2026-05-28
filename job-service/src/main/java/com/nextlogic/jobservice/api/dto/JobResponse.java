@@ -1,5 +1,6 @@
 package com.nextlogic.jobservice.api.dto;
 
+import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Value;
 
@@ -15,4 +16,5 @@ public class JobResponse {
     String url;
     Instant createdAt;
     Instant updatedAt;
+
 }
