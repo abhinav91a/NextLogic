@@ -1,20 +1,17 @@
 package com.nextlogic.companyservice.api;
 import com.nextlogic.companyservice.api.dto.CompanyResponse;
-import com.nextlogic.companyservice.api.dto.CompanyResponse;
 import com.nextlogic.companyservice.service.CompanyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/companies")
 @RequiredArgsConstructor
 public class CompanyController {
 
     private final CompanyService companyService;
-
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
