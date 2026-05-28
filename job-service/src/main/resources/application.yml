@@ -9,6 +9,10 @@ eureka:
   instance:
     prefer-ip-address: true
 
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/nextlogic
+
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
