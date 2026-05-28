@@ -1,20 +1,21 @@
 package com.nextlogic.jobservice.api.dto;
 
-import jakarta.persistence.Column;
+import com.nextlogic.jobservice.mongo.CompanyMetadata;
 import lombok.Builder;
 import lombok.Value;
-
-import java.time.Instant;
 
 @Value
 @Builder
 public class JobResponse {
     Long id;
-    Long companyId;
     String title;
+    String description;
     String location;
-    String url;
-    Instant createdAt;
-    Instant updatedAt;
+    boolean remote;
+    String companyName;
 
+    CompanyMetadata companyMetadata;
+
+    Long companyId;
+    String url;
 }

@@ -2,6 +2,7 @@ package com.nextlogic.jobservice.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.Instant;
 
 @Entity
@@ -16,6 +17,9 @@ public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    // ⭐ Store only metadata ID, not the Mongo object
+    private String companyMetadataId;
 
     private Long companyId;
     private String title;
@@ -41,6 +45,7 @@ public class Job {
 
     @Column(nullable = true)
     private Instant expiresAt;
+
     public boolean isExpired() {
         return expiresAt != null && expiresAt.isBefore(Instant.now());
     }

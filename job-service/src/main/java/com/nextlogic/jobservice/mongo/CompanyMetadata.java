@@ -16,4 +16,5 @@ public class CompanyMetadata {
     private String industry;
     private String size;
     private String website;
+
 }
