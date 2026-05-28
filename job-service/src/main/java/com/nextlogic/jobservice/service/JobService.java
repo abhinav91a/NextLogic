@@ -2,6 +2,8 @@ package com.nextlogic.jobservice.service;
 
 import com.nextlogic.jobservice.api.dto.JobResponse;
 import com.nextlogic.jobservice.domain.Job;
+import com.nextlogic.jobservice.mongo.CompanyMetadata;
+import com.nextlogic.jobservice.mongo.CompanyMetadataRepository;
 import com.nextlogic.jobservice.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import static java.util.stream.Collectors.toList;
 public class JobService {
 
     private final JobRepository jobRepository;
+    private final CompanyMetadataRepository metadataRepository;
 
     public JobResponse create(JobResponse request) {
         Job job = Job.builder()
@@ -22,7 +25,9 @@ public class JobService {
                 .title(request.getTitle())
                 .location(request.getLocation())
                 .url(request.getUrl())
+                .companyMetadataId(null) // will be set by enrichment pipeline
                 .build();
+
         Job saved = jobRepository.save(job);
         return toResponse(saved);
     }
@@ -53,14 +58,22 @@ public class JobService {
     }
 
     private JobResponse toResponse(Job job) {
+
+        CompanyMetadata metadata = null;
+
+        if (job.getCompanyMetadataId() != null) {
+            metadata = metadataRepository
+                    .findById(job.getCompanyMetadataId())
+                    .orElse(null);
+        }
+
         return JobResponse.builder()
                 .id(job.getId())
                 .companyId(job.getCompanyId())
                 .title(job.getTitle())
                 .location(job.getLocation())
                 .url(job.getUrl())
-                .createdAt(job.getCreatedAt())
-                .updatedAt(job.getUpdatedAt())
+                .companyMetadata(metadata)
                 .build();
     }
 }

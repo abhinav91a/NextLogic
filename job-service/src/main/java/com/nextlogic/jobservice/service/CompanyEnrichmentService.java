@@ -20,6 +20,9 @@ public class CompanyEnrichmentService {
                     CompanyMetadata meta = new CompanyMetadata();
                     meta.setName(companyName);
                     meta.setLogoUrl("https://logo.clearbit.com/" + companyName + ".com");
+                    meta.setWebsite("https://www." + companyName.toLowerCase() + ".com");
+                    meta.setIndustry("Unknown");
+                    meta.setSize("Unknown");
                     return metadataRepository.save(meta);
                 });
     }
