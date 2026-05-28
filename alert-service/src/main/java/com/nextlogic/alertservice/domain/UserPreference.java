@@ -2,16 +2,15 @@ package com.nextlogic.alertservice.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.Instant;
 
 @Entity
-@Table(name = "alerts")
+@Table(name = "user_preferences")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Alert {
+public class UserPreference {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,9 +18,7 @@ public class Alert {
 
     private Long userId;
 
-    private String jobTitle;
-    private String jobLocation;
-    private String jobUrl;
-
-    private Instant createdAt;
+    private String keywords;     // "java,spring,backend"
+    private String locations;    // "London,Remote"
+    private boolean remoteOnly;
 }

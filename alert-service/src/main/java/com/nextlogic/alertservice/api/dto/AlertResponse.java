@@ -1,18 +1,24 @@
 package com.nextlogic.alertservice.api.dto;
 
+import jakarta.persistence.Column;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 
 import java.time.Instant;
 
-@Value
+@Data
 @Builder
 public class AlertResponse {
-    Long id;
-    Long companyId;
-    String title;
-    String location;
-    String url;
-    Instant createdAt;
-    Instant updatedAt;
+
+    private Long id;
+    private Long userId;
+
+    private String jobTitle;
+    private String jobLocation;
+    private String jobUrl;
+
+    private Instant createdAt;
+
+
+
 }

@@ -1,0 +1,52 @@
+http:
+  middlewares:
+
+    # -------------------------
+    # SECURITY HEADERS
+    # -------------------------
+    security-headers:
+      headers:
+        frameDeny: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "no-referrer"
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+
+    # -------------------------
+    # CORS CONFIG
+    # -------------------------
+    cors:
+      headers:
+        accessControlAllowOriginList:
+          - "https://nextlogic.org.uk"
+        accessControlAllowMethods:
+          - "GET"
+          - "POST"
+          - "PUT"
+          - "DELETE"
+          - "OPTIONS"
+        accessControlAllowHeaders:
+          - "Authorization"
+          - "Content-Type"
+        accessControlAllowCredentials: true
+
+    # -------------------------
+    # GZIP COMPRESSION
+    # -------------------------
+    gzip:
+      compress: {}
+
+    # -------------------------
+    # RATE LIMITING
+    # -------------------------
+    ratelimit:
+      rateLimit:
+        average: 100
+        burst: 50
+
+  routers: {}
+
+  services: {}
