@@ -8,7 +8,7 @@ import lombok.Data;
 public class JobDto {
     private String id;
     private String title;
-    private String company;
+    private Long companyId;
     private String location;
     private String url;
 }

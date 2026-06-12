@@ -12,15 +12,17 @@ import java.util.Optional;
 public interface JobRepository extends JpaRepository<Job, Long> {
 
     Optional<Job> findByUrl(String url);
+
     List<Job> findByExpiresAtBefore(Instant time);
+
     Page<Job> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
+
     Page<Job> findByTitleContainingIgnoreCaseAndLocationContainingIgnoreCase(
-            String title, String location, Pageable pageable);
-    Page<Job> findByTitleContainingIgnoreCaseAndCompany_NameContainingIgnoreCase(
-            String title, String company, Pageable pageable);
-    Page<Job> findByTitleContainingIgnoreCaseAndRemote(
-            String title, boolean remote, Pageable pageable);
+            String title, String location, Pageable pageable
+    );
 
-
+    Page<Job> findByTitleContainingIgnoreCaseAndCompanyId(
+            String title, Long companyId, Pageable pageable
+    );
 }
 
