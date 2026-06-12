@@ -26,21 +26,20 @@ public class JobSearchService {
         String keyword = request.getKeyword() == null ? "" : request.getKeyword();
         String location = request.getLocation() == null ? "" : request.getLocation();
 
-        if (request.getCompany() != null) {
-            return jobRepository.findByTitleContainingIgnoreCaseAndCompany_NameContainingIgnoreCase(
-                    keyword, request.getCompany(), pageable
+        // ⭐ Company filter
+        if (request.getCompanyId() != null) {
+            return jobRepository.findByTitleContainingIgnoreCaseAndCompanyId(
+                    keyword,
+                    request.getCompanyId(),
+                    pageable
             );
         }
 
-        if (request.getRemote() != null) {
-            return jobRepository.findByTitleContainingIgnoreCaseAndRemote(
-                    keyword, request.getRemote(), pageable
-            );
-        }
-
+        // ⭐ Location filter
         return jobRepository.findByTitleContainingIgnoreCaseAndLocationContainingIgnoreCase(
-                keyword, location, pageable
+                keyword,
+                location,
+                pageable
         );
     }
-
 }

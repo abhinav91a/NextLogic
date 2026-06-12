@@ -18,7 +18,6 @@ public class Job {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ⭐ Store only metadata ID, not the Mongo object
     private String companyMetadataId;
 
     private Long companyId;
