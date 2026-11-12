@@ -4,8 +4,6 @@ A fully containerised microservices platform that scrapes, enriches, stores and 
 
 **Status:** In active development (April 2026 to present)
 
-> Items marked `[TODO]` are placeholders. Replace them with real details, or delete the line, before publishing.
-
 ---
 
 ## Tech Stack
@@ -37,27 +35,19 @@ NextLogic is split into independent services, all routed through a single API ga
 | Discovery Server | Service registry (Eureka) |
 | Frontend | Next.js web application |
 
-`[TODO: add an architecture diagram, e.g. docs/architecture.png]`
+### Event-Driven Pipeline
 
-### Event Flow
-
-1. The Scraper Service publishes raw job listings to Kafka.
-2. Enrichment consumers attach company metadata.
-3. Job Service consumes the enriched events and persists them.
-4. The matching engine ranks listings against user preferences.
-5. Alert Service notifies users of relevant matches.
-
-`[TODO: confirm the topic names and exact flow]`
+Job listings flow through Kafka producers and consumers across four stages: scraping, enrichment, storage and ranking. Each service handles its own stage independently.
 
 ---
 
 ## Key Features
 
-- **Real-time pipelines:** Kafka producers and consumers move listings through scraping, enrichment, storage and ranking.
-- **Job matching engine:** Keyword, location and company-based search across PostgreSQL and MongoDB, with millisecond-level responses. `[TODO: add a measured figure, e.g. p95 latency]`
-- **Automated job expiry:** Scheduled workflows remove stale listings.
-- **Deduplication:** Enrichment pipelines keep datasets clean and free of duplicates across services.
-- **Personalised alerts:** Users receive alerts based on saved preferences.
+- **Real-time pipelines:** Kafka-driven event pipelines move listings through scraping, enrichment, storage and ranking.
+- **Job matching engine:** Keyword, location and company-based search across PostgreSQL and MongoDB, with millisecond-level response times.
+- **Automated job expiry:** Workflows remove stale listings automatically.
+- **Deduplication:** Enrichment pipelines keep datasets clean and deduplicated across services.
+- **Personalised alerts:** Users receive alerts based on their saved preferences.
 - **Company insights:** Company metadata is surfaced alongside listings.
 - **Unified API:** The frontend talks to every service through one gateway.
 
@@ -71,60 +61,14 @@ Built with Next.js, React and TypeScript. Main views:
 - Company insights
 - Personalised alerts
 
-`[TODO: rendering strategy (SSR / SSG / ISR / CSR), state management, styling (e.g. Tailwind)]`
-
 ---
 
-## Getting Started
-
-### Prerequisites
+## Prerequisites
 
 - Java 21
 - Maven
 - Docker
-- Node.js `[TODO: version]`
-
-### Run locally
-
-```bash
-# Clone the repository
-git clone https://github.com/abhinav91a/NextLogic.git
-cd NextLogic
-
-# [TODO: replace with your actual run commands, e.g. docker compose up --build]
-```
-
-### Environment variables
-
-`[TODO: list required variables, e.g. database URLs and Kafka bootstrap servers]`
-
----
-
-## Project Structure
-
-```
-NextLogic/
-├── [TODO: gateway/]
-├── [TODO: discovery-server/]
-├── [TODO: scraper-service/]
-├── [TODO: job-service/]
-├── [TODO: company-service/]
-├── [TODO: user-preferences-service/]
-├── [TODO: alert-service/]
-└── [TODO: frontend/]
-```
-
----
-
-## Testing
-
-`[TODO: describe the test setup, or delete this section]`
-
----
-
-## Roadmap
-
-`[TODO: planned features, or delete this section]`
+- Node.js
 
 ---
 
