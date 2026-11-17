@@ -2,7 +2,6 @@
 
 A fully containerised microservices platform that scrapes, enriches, stores and ranks job listings in real time using Kafka-driven event pipelines, with a Next.js frontend for search, company insights and personalised alerts.
 
-**Status:** In active development (April 2026 to present)
 
 ---
 
